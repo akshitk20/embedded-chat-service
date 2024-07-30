@@ -12,14 +12,18 @@ public class ChatService {
 
     private final ChatClient chatClient;
 
-    public ChatService(ChatModel chatModel) {
+    private final WeatherService weatherService;
+
+    public ChatService(ChatModel chatModel, WeatherService weatherService) {
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultAdvisors(new PromptChatMemoryAdvisor(new InMemoryChatMemory()))
                 .build();
+        this.weatherService = weatherService;
     }
 
     public String getChatResponse(String message) {
         return chatClient.prompt()
+                .function("WeatherService", "Get realtime weather for API", weatherService)
                 .messages(new UserMessage(message))
                 .call()
                 .content();
