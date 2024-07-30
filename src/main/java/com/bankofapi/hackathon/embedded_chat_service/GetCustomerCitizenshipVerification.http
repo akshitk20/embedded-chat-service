@@ -1,0 +1,29 @@
+POST \
+https://ob.sandbox.natwest.com/token \
+-H 'Content-Type: application/x-www-form-urlencoded' \
+-d 'grant_type=client_credentials&client_id=CLIENT_ID&client_secret=CLIENT_SECRET'
+
+###
+### GET request to example server
+GET https://ob.sandbox.natwest.com/zerocode/bankofapis.com/customer-citizenship/v3/attributes/citizenship
+Authorization: ACCESS_TOKEN
+
+Sw
+
+{
+  "data": {
+    "id": "dfacca12375936129385823213addf",
+    "name": "Mr GivenName MiddleName FamilyName",
+    "country_of_birth": "GBR",
+    "place_of_birth": "London",
+    "country_of_nationality": "GBR",
+    "country_of_residence": "GBR",
+    "gbr.nino": "AA123456A",
+    "citizenship": [
+      {
+        "additional_citizenship_country_code": "FRA"
+      }
+    ]
+  }
+}
+###
