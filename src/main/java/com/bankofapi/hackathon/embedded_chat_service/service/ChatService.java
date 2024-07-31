@@ -1,6 +1,5 @@
 package com.bankofapi.hackathon.embedded_chat_service.service;
 
-import com.bankofapi.hackathon.embedded_chat_service.service.bankofapi.CitizenshipVerification;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
@@ -13,9 +12,9 @@ public class ChatService {
 
     private final ChatClient chatClient;
 
-    private final CitizenshipVerification citizenshipVerificationService;
+    private final CitizenshipVerificationService citizenshipVerificationService;
 
-    public ChatService(ChatModel chatModel, CitizenshipVerification citizenshipVerificationService) {
+    public ChatService(ChatModel chatModel, CitizenshipVerificationService citizenshipVerificationService) {
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultAdvisors(new PromptChatMemoryAdvisor(new InMemoryChatMemory()))
                 .build();
@@ -24,7 +23,7 @@ public class ChatService {
 
     public String getChatResponse(String message) {
         return chatClient.prompt()
-                .function("CitizenshipVerificationService", "Get Details for the User", citizenshipVerificationService)
+                .function("CitizenshipVerificationService", "Check citizenship details for the user", citizenshipVerificationService)
                 .messages(new UserMessage(message))
                 .call()
                 .content();
