@@ -1,5 +1,6 @@
 package com.bankofapi.hackathon.embedded_chat_service.controller;
 
+import com.bankofapi.hackathon.embedded_chat_service.service.CitizenshipVerificationService;
 import com.bankofapi.hackathon.embedded_chat_service.service.IndicativeRatesService;
 import com.bankofapi.hackathon.embedded_chat_service.service.ChatService;
 import com.bankofapi.hackathon.embedded_chat_service.service.LoanQuotesService;
@@ -15,10 +16,15 @@ public class ChatController {
 
     private final IndicativeRatesService indicativeRatesService;
 
-    public ChatController(ChatService chatService, LoanQuotesService loanQuotesService, IndicativeRatesService indicativeRatesService) {
+    private final CitizenshipVerificationService citizenshipVerificationService;
+
+
+
+    public ChatController(ChatService chatService, LoanQuotesService loanQuotesService, IndicativeRatesService indicativeRatesService, CitizenshipVerificationService citizenshipVerificationService) {
         this.chatService = chatService;
         this.loanQuotesService = loanQuotesService;
         this.indicativeRatesService = indicativeRatesService;
+        this.citizenshipVerificationService = citizenshipVerificationService;
     }
 
     @GetMapping("/generate")
@@ -35,5 +41,10 @@ public class ChatController {
     public IndicativeRatesService.FxIndicativeRatesResponse getToken(@RequestParam(value = "fromCurrency") String fromCurrency,
                                                                      @RequestParam(value = "toCurrency") String toCurrency) {
         return indicativeRatesService.getFxIndicativeRateResponse(fromCurrency, toCurrency);
+    }
+
+    @PostMapping("/citizenship")
+    public CitizenshipVerificationService.CitizenshipVerificationResponse getTokenResponse(@RequestBody CitizenshipVerificationService.CitizenshipVerificationRequest request) {
+        return citizenshipVerificationService.getCitizenShipVerificationResponse(request);
     }
 }

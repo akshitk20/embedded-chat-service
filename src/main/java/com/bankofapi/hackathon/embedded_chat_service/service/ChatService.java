@@ -12,18 +12,18 @@ public class ChatService {
 
     private final ChatClient chatClient;
 
-    private final WeatherService weatherService;
+    private final CitizenshipVerificationService citizenshipVerificationService;
 
-    public ChatService(ChatModel chatModel, WeatherService weatherService) {
+    public ChatService(ChatModel chatModel, CitizenshipVerificationService citizenshipVerificationService) {
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultAdvisors(new PromptChatMemoryAdvisor(new InMemoryChatMemory()))
                 .build();
-        this.weatherService = weatherService;
+        this.citizenshipVerificationService = citizenshipVerificationService;
     }
 
     public String getChatResponse(String message) {
         return chatClient.prompt()
-                .function("WeatherService", "Get realtime weather for API", weatherService)
+                .function("CitizenshipVerificationService", "Check citizenship details for the user", citizenshipVerificationService)
                 .messages(new UserMessage(message))
                 .call()
                 .content();
