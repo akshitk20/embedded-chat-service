@@ -9,8 +9,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
+import java.util.function.Function;
+
 @Service
-public class LoanQuotesService {
+public class LoanQuotesService implements Function<LoanQuotesService.LoanQuoteRequest, LoanQuotesService.LoanQuoteResponse> {
 
     @Value("${citizenshipverification.token-url}")
     private String tokenUrl;
@@ -24,32 +26,36 @@ public class LoanQuotesService {
     @Value("${nativeloansnwb.client-secret}")
     private String clientSecret;
 
+    @Override
+    public LoanQuoteResponse apply(LoanQuoteRequest request) {
+        return getLoanQuoteResponse(request);
+    }
+
     public record LoanQuoteRequest(int amount, String customerId, String purposeId, int termInMonths) {}
 
     public record LoanQuoteResponse(String decision, PersonalLoanIllustration personalLoanIllustration, Reasons reasons) {}
+
 
     public record PersonalLoanIllustration(int apr, int interestRate, int totalRepaymentInPence, int totalInterestInPence,
                                            Repayment repayment) {}
     public record Repayment(int amountInPence, String interval) {}
     public record Reasons(String id, String code, String text) {}
 
+    public static LoanQuotesService.LoanQuoteResponse createMockResponse() {
+        return new LoanQuoteResponse(
+                "ACCEPTED",
+                new PersonalLoanIllustration(350, 340, 1089000, 89000
+                        , new Repayment(18150, "MONTHLY"))
+                ,new Reasons("ACC0010", "ACCEPT_HIGHLY_LIKELY", "Highly likely to be accepted")
+        );
+
+    }
     public record TokenResponse(@JsonProperty("access_token") String accessToken,
                                 @JsonProperty("token_type") String tokenType,
                                 @JsonProperty("expires_in") Integer expiresIn) {}
 
     public LoanQuoteResponse getLoanQuoteResponse(LoanQuoteRequest request) {
-        RestClient restClient = RestClient.builder()
-                .baseUrl(apiUrl)
-                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader("x-fapi-interaction-id", "98f077d4-0957-4fdf-963d-6855b2308817")
-                .defaultHeader("Authorization" , "Bearer " + getToken().accessToken)
-                .build();
-        return restClient.post()
-                .uri("/illustrations/v1/quote/personal-loan")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
-                .retrieve()
-                .body(LoanQuoteResponse.class);
+        return createMockResponse();
 
     }
     public TokenResponse getToken() {

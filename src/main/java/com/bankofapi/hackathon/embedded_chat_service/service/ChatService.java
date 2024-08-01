@@ -14,16 +14,24 @@ public class ChatService {
 
     private final CitizenshipVerificationService citizenshipVerificationService;
 
-    public ChatService(ChatModel chatModel, CitizenshipVerificationService citizenshipVerificationService) {
+    private final LoanQuotesService loanQuotesService;
+
+    private final DirectAccessAccountsService directAccessAccountsService;
+
+    public ChatService(ChatModel chatModel, CitizenshipVerificationService citizenshipVerificationService, LoanQuotesService loanQuotesService, DirectAccessAccountsService directAccessAccountsService) {
         this.chatClient = ChatClient.builder(chatModel)
                 .defaultAdvisors(new PromptChatMemoryAdvisor(new InMemoryChatMemory()))
                 .build();
         this.citizenshipVerificationService = citizenshipVerificationService;
+        this.loanQuotesService = loanQuotesService;
+        this.directAccessAccountsService = directAccessAccountsService;
     }
 
     public String getChatResponse(String message) {
         return chatClient.prompt()
                 .function("CitizenshipVerificationService", "Check citizenship details for the user", citizenshipVerificationService)
+                .function("DirectAccessAccountsService", "Accounts access", directAccessAccountsService)
+                .function("LoanQuoteService", "Check Loan", loanQuotesService)
                 .messages(new UserMessage(message))
                 .call()
                 .content();
