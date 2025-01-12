@@ -50,12 +50,28 @@ public class LoanQuotesService implements Function<LoanQuotesService.LoanQuoteRe
         );
 
     }
+
+    public static LoanQuotesService.LoanQuoteResponse createMockResponseForRejection() {
+        return new LoanQuoteResponse(
+                "REJECTED",
+                new PersonalLoanIllustration(350, 340, 1089000000, 89000000
+                        , new Repayment(181500, "MONTHLY"))
+                ,new Reasons("REJ0010", "REJECT_HIGHLY_LIKELY", "Highly likely to be rejected")
+        );
+
+    }
+
+
     public record TokenResponse(@JsonProperty("access_token") String accessToken,
                                 @JsonProperty("token_type") String tokenType,
                                 @JsonProperty("expires_in") Integer expiresIn) {}
 
     public LoanQuoteResponse getLoanQuoteResponse(LoanQuoteRequest request) {
-        return createMockResponse();
+        if(request.amount < 20000) {
+            return createMockResponse();
+        } else {
+            return createMockResponseForRejection();
+        }
 
     }
     public TokenResponse getToken() {
